@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -9,7 +9,9 @@ from app.services.product_service import (add_product,
                                           edit_product,
                                           remove_product,
                                           )
-
+from app.schemas.pagination import PaginatedResponse
+from typing import Annotated
+from app.schemas.pagination import PaginatedResponse
 
 
 router = APIRouter(
@@ -26,9 +28,44 @@ def create_product(
     return add_product(db, product)
 
 
-@router.get("/", response_model=list[ProductResponse])
-def get_products(db: Session = Depends(get_db)):
-    return list_products(db)
+from app.schemas.pagination import PaginatedResponse
+
+
+@router.get("/", response_model=PaginatedResponse[ProductResponse])
+def get_products(
+
+    page: Annotated[int, Query(ge=1)] = 1,
+
+    limit: Annotated[int, Query(ge=1, le=100)] = 10,
+
+    search: str | None = None,
+
+    sort_by: str = "created_at",
+
+    sort_order: str = "desc",
+
+    min_price: float | None = None,
+
+    max_price: float | None = None,
+
+    in_stock: bool | None = None,
+
+    db: Session = Depends(get_db),
+):
+
+    return list_products(
+        db,
+        page,
+        limit,
+        search,
+        sort_by,
+        sort_order,
+        min_price,
+        max_price,
+        in_stock,
+    )
+
+
 
 @router.get("/{product_id}", response_model=ProductResponse)
 def get_single_product(

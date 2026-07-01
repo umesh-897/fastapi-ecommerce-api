@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from math import ceil
 
 from app.schemas.product import ProductCreate,ProductUpdate
 
@@ -15,9 +16,37 @@ def add_product(db: Session, product: ProductCreate):
     return create_product(db, product)
 
 
+def list_products(
+    db,
+    page,
+    limit,
+    search,
+    sort_by,
+    sort_order,
+    min_price,
+    max_price,
+    in_stock,
+):
 
-def list_products(db: Session):
-    return get_all_products(db)
+    total, products = get_all_products(
+        db,
+        page,
+        limit,
+        search,
+        sort_by,
+        sort_order,
+        min_price,
+        max_price,
+        in_stock,
+    )
+
+    return {
+        "total": total,
+        "page": page,
+        "limit": limit,
+        "total_pages": ceil(total / limit) if total else 0,
+        "data": products,
+    }
 
 
 def get_product(db: Session, product_id: int):
