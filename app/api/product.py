@@ -12,7 +12,8 @@ from app.services.product_service import (add_product,
 from app.schemas.pagination import PaginatedResponse
 from typing import Annotated
 from app.schemas.pagination import PaginatedResponse
-
+from app.api.admin import admin_required
+from app.models.user import User
 
 router = APIRouter(
     prefix="/products",
@@ -24,6 +25,7 @@ router = APIRouter(
 def create_product(
     product: ProductCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(admin_required),
 ):
     return add_product(db, product)
 
@@ -80,6 +82,7 @@ def update_product_api(
     product_id: int,
     product: ProductUpdate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(admin_required),
 ):
     return edit_product(
         db,
@@ -92,6 +95,7 @@ def update_product_api(
 def delete_product_api(
     product_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(admin_required),
 ):
     remove_product(db, product_id)
 

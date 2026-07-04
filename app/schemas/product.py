@@ -9,6 +9,7 @@ class ProductCreate(BaseModel):
     price: float
     stock: int
     image_url: str | None = None
+    category_id: int
 
 
 class ProductResponse(ProductCreate):
@@ -26,4 +27,5 @@ class ProductUpdate(BaseModel):
     price: float
     stock: int
     image_url: str | None = None
+    category_id: int
     is_available: bool

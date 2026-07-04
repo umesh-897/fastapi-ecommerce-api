@@ -14,6 +14,7 @@ def create_product(db: Session, product: ProductCreate):
         price=product.price,
         stock=product.stock,
         image_url=product.image_url,
+        category_id=product.category_id,
     )
 
     db.add(new_product)
@@ -130,6 +131,7 @@ def update_product(
     product.price = product_data.price
     product.stock = product_data.stock
     product.image_url = product_data.image_url
+    product.category_id = product_data.category_id
     product.is_available = product_data.is_available
 
     db.commit()

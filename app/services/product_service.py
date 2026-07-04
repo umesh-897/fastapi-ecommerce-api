@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from math import ceil
 
 from app.schemas.product import ProductCreate,ProductUpdate
-
+from app.repositories.category_repository import get_category_by_id
 from app.repositories.product_repository import (
     create_product,
     get_all_products,
@@ -12,9 +12,26 @@ from app.repositories.product_repository import (
     delete_product,
 )
 
-def add_product(db: Session, product: ProductCreate):
-    return create_product(db, product)
+def add_product(
+    db: Session,
+    product: ProductCreate,
+):
 
+    category = get_category_by_id(
+        db,
+        product.category_id,
+    )
+
+    if not category:
+        raise HTTPException(
+            status_code=404,
+            detail="Category not found"
+        )
+
+    return create_product(
+        db,
+        product,
+    )
 
 def list_products(
     db,
